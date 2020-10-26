@@ -1,29 +1,10 @@
-# README #
+# Usage
+Modify iam.yaml to create desired IAM Groups, IAM Users, and IAM Group Memberships
 
-This README would normally document whatever steps are necessary to get your application up and running.
-
-### What is this repository for? ###
-
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+## Example
+```yaml
+IAM_GROUP:
+  name: (string) The name of the IAM Group
+  iam_policies: (string[]) List of policies to attach to the IAM Group
+  members: (string[]) IAM Users to add to the IAM Group  
+```
