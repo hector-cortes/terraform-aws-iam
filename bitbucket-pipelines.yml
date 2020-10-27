@@ -4,8 +4,15 @@ pipelines:
   pull-requests:
     '**': 
       - step:
-          name: 'terraform checks'
-          script:
-            - terraform fmt -check
-            - terraform init
-            - terraform validate
+        name: 'terraform checks'
+        script:
+          - terraform fmt -check
+          - terraform init
+          - terraform validate
+  branches:
+    master:
+      - step:
+        name: 'terraform deploy'
+        script:
+          - terraform init
+          - terraform plan
