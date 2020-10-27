@@ -4,5 +4,7 @@ pipelines:
   pull-requests:
     '**': 
       - step:
+          name: 'terraform checks'
           script:
             - terraform fmt -check
+            - terraform validate
