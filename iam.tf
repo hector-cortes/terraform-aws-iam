@@ -16,7 +16,7 @@ resource "aws_iam_user" "users" {
 
   name          = each.value
   path          = "/user_accounts/"
-    force_destroy = true
+  force_destroy = true
 }
 
 resource "aws_iam_group" "groups" {
