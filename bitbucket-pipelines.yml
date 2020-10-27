@@ -7,4 +7,5 @@ pipelines:
           name: 'terraform checks'
           script:
             - terraform fmt -check
+            - terraform init
             - terraform validate
