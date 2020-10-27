@@ -3,16 +3,16 @@ image: hashicorp/terraform:0.13.5
 pipelines:
   pull-requests:
     '**': 
-      - step:
-        name: 'terraform checks'
-        script:
+      -  step:
+          name: 'terraform checks'
+          script:
           - terraform fmt -check
           - terraform init
           - terraform validate
   branches:
     master:
-      - step:
-        name: 'terraform deploy'
-        script:
+      -  step:
+          name: 'terraform deploy'
+          script:
           - terraform init
           - terraform plan
