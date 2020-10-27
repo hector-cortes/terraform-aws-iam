@@ -1,0 +1,8 @@
+image: hashicorp/terraform:0.13.5
+
+pipelines:
+  pull-requests:
+    '**': 
+      - step:
+          script:
+            - terraform fmt -check
