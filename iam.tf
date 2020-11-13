@@ -34,10 +34,20 @@ resource "aws_iam_group" "groups" {
   path = "/user_groups/"
 }
 
+#################################################
+# IAM Group Membership
+# Assigns IAM users to IAM groups, based off of
+# local.iam_groups.members
+#################################################
 resource "aws_iam_user_group_membership" "group_members" {
-  for_each = local.iam_group_memberships
-  user     = each.key
-  groups   = each.value
+  for_each = transpose({
+    for iam_group in local.iam_groups :
+    iam_group.name => iam_group.members
+  })
 
-  depends_on = [aws_iam_user.users, aws_iam_group.groups]
+  user   = each.key
+  groups = each.value
+
+  depends_on = [aws_iam_group.groups, aws_iam_user.users]
+}
 }
