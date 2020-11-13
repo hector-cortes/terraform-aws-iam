@@ -1,14 +1,9 @@
+#################################################
+# Local Variables
+#################################################
 locals {
-  iam_groups = yamldecode(file("${path.module}/config_files/iam.yaml"))
-
-  iam_users = toset(flatten([
-    for iam_group in local.iam_groups :
-    iam_group.members
-  ]))
-  iam_group_memberships = transpose({
-    for iam_group in local.iam_groups :
-    iam_group.name => iam_group.members
-  })
+  iam_groups = yamldecode(file("${path.module}/config_files/iam.yaml"))["groups"]
+  iam_policies = yamldecode(file("${path.module}/config_files/iam.yaml"))["policies"]
 }
 
 resource "aws_iam_user" "users" {
