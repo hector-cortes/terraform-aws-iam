@@ -91,6 +91,11 @@ resource "aws_iam_policy" "group_policies" {
   policy = data.aws_iam_policy_document.policies_json[each.key].json
 }
 
+###################################################
+# IAM Group Policy Attachment
+# Attaches IAM Policies to IAM Groups, based off of
+# the entries in local.iam_groups.*.iam_policies
+###################################################
 resource "aws_iam_group_policy_attachment" "group_policy_attachments" {
   for_each = toset(flatten([
     for group in local.iam_groups : [
