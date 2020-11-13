@@ -22,6 +22,11 @@ resource "aws_iam_user" "users" {
   force_destroy = true
 }
 
+#################################################
+# IAM Groups
+# Creates an IAM Group for each key in
+# local.iam_groups
+#################################################
 resource "aws_iam_group" "groups" {
   for_each = local.iam_groups
 
