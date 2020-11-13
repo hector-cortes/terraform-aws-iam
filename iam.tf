@@ -51,6 +51,13 @@ resource "aws_iam_user_group_membership" "group_members" {
   depends_on = [aws_iam_group.groups, aws_iam_user.users]
 }
 
+###################################################
+# IAM Policy Documents
+# Creates a policy document allowing sts:AssumeRole
+# The resource list is generated from the Cartesian
+# product of local.iam_groups.*.roles and
+# local.iam_groups.*.accounts
+###################################################
 data "aws_iam_policy_document" "policies_json" {
   for_each = {
     for key, value in local.iam_policies :
