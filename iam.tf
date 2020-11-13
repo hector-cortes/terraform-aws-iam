@@ -79,4 +79,17 @@ resource "aws_iam_policy" "group_policies" {
   policy = data.aws_iam_policy_document.policies_json[each.key].json
 }
 
+resource "aws_iam_group_policy_attachment" "group_policy_attachments" {
+  for_each = toset(flatten([
+    for group in local.iam_groups : [
+      for policy in local.iam_policies : [
+        format("%s,%s", group.name, policy.name)
+      ]
+    ]
+  ]))
+
+  group      = aws_iam_group.groups[(split(",", each.value))[0]].name
+  policy_arn = aws_iam_policy.group_policies[(split(",", each.value))[1]].arn
+
+  depends_on = [aws_iam_group.groups, aws_iam_policy.group_policies]
 }
