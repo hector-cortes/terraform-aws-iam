@@ -50,4 +50,33 @@ resource "aws_iam_user_group_membership" "group_members" {
 
   depends_on = [aws_iam_group.groups, aws_iam_user.users]
 }
+
+data "aws_iam_policy_document" "policies_json" {
+  for_each = {
+    for key, value in local.iam_policies :
+    key => flatten([
+      for account in flatten(value.accounts) : [
+        for role in value.roles :
+        format("arn:aws:iam::%v:role/%v", account, tostring(role))
+      ]
+    ])
+  }
+
+  statement {
+    sid       = "AssumeRolePermissions"
+    effect    = "Allow"
+    actions   = ["sts:AssumeRole"]
+    resources = each.value
+  }
+}
+
+resource "aws_iam_policy" "group_policies" {
+  for_each = local.iam_policies
+
+  name = each.key
+  path = "/assume-role/"
+
+  policy = data.aws_iam_policy_document.policies_json[each.key].json
+}
+
 }
