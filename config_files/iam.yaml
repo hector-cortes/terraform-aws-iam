@@ -1,35 +1,77 @@
-admins:
-  name: admins
-  iam_policies:
-    - admin
-  members:
-    - admin_1@xpiredmilk.com
-    - admin_2@xpiredmilk.com
-    - admin_3@xpiredmilk.com
-    - admin_4@xpiredmilk.com
-    - admin_5@xpiredmilk.com
-    - admin_6@xpiredmilk.com
-devs:
-  name: devs
-  iam_policies:
-    - power-user
-  members:
-    - devs_1@xpiredmilk.com
-    - devs_2@xpiredmilk.com
-    - devs_3@xpiredmilk.com
-    - devs_4@xpiredmilk.com
-    - devs_5@xpiredmilk.com
-product-owners:
-  name: product-owners
-  iam_policies:
-    - read-only-user
-  members:
-    - product-owner1@xpiredmilk.com
-    - product-owner2@xpiredmilk.com
-    - product-owner3@xpiredmilk.com
-    - product-owner4@xpiredmilk.com
-    - product-owner5@xpiredmilk.com
-    - product-owner6@xpiredmilk.com
-    - product-owner7@xpiredmilk.com
-    - product-owner8@xpiredmilk.com
-    - product-owner9@xpiredmilk.com
+accounts:
+  group_1: &group_1
+  - "000000000000"
+  - "000000000001"
+  - "000000000002"
+  - "000000000003"
+  - "000000000004"
+  group_2: &group_2
+  - "000000000005"
+  - "000000000006"
+  - "000000000007"
+  - "000000000008"
+  - "000000000009"
+
+policies:
+  admin_policy: &admin_policy
+    name: admin_policy
+    roles:
+      - admin
+      - power-user
+      - read-only-user
+    accounts:
+      - *group_1
+      - *group_2
+  dev_policy: &dev_policy
+    name: dev_policy
+    roles:
+      - admin
+    accounts:
+      - *group_2
+  read_only_policy: &read_only_policy
+    name: read_only_policy
+    roles:
+      - read-only-user
+    accounts:
+      - *group_2
+
+groups: 
+  admins:
+    name: admins
+    iam_policies:
+      - *admin_policy
+      - *dev_policy
+    members: 
+      - admin_1@xpiredmilk.com
+      - admin_2@xpiredmilk.com
+      - admin_3@xpiredmilk.com
+      - admin_4@xpiredmilk.com
+      - admin_5@xpiredmilk.com
+      - admin_6@xpiredmilk.com
+  devs:
+    name: devs
+    iam_policies:
+      - *dev_policy
+    members:
+      - admin_1@xpiredmilk.com
+      - admin_2@xpiredmilk.com
+      - admin_3@xpiredmilk.com
+      - devs_1@xpiredmilk.com
+      - devs_2@xpiredmilk.com
+      - devs_3@xpiredmilk.com
+      - devs_4@xpiredmilk.com
+      - devs_5@xpiredmilk.com
+  product-owners:
+    name: product-owners
+    iam_policies:
+      - *read_only_policy
+    members:
+      - product-owner1@xpiredmilk.com
+      - product-owner2@xpiredmilk.com
+      - product-owner3@xpiredmilk.com
+      - product-owner4@xpiredmilk.com
+      - product-owner5@xpiredmilk.com
+      - product-owner6@xpiredmilk.com
+      - product-owner7@xpiredmilk.com
+      - product-owner8@xpiredmilk.com
+      - product-owner9@xpiredmilk.com
