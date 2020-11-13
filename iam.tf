@@ -77,6 +77,11 @@ data "aws_iam_policy_document" "policies_json" {
   }
 }
 
+###################################################
+# IAM Policy Documents
+# Creates an IAM Policy for each key in
+# local.iam_policies
+###################################################
 resource "aws_iam_policy" "group_policies" {
   for_each = local.iam_policies
 
