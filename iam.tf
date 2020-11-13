@@ -6,8 +6,16 @@ locals {
   iam_policies = yamldecode(file("${path.module}/config_files/iam.yaml"))["policies"]
 }
 
+#################################################
+# IAM Users
+# Creates an IAM User for each unique entry in
+# local.iam_groups.members
+#################################################
 resource "aws_iam_user" "users" {
-  for_each = local.iam_users
+  for_each = toset(distinct(flatten([
+    for iam_group in local.iam_groups:
+    iam_group.members
+  ])))
 
   name          = each.value
   path          = "/user_accounts/"
