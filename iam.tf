@@ -2,48 +2,41 @@
 # Local Variables
 ###################################################
 locals {
-  iam_groups = yamldecode(file("${path.module}/config_files/iam.yaml"))["groups"]
-  iam_policies = yamldecode(file("${path.module}/config_files/iam.yaml"))["policies"]
+  config = yamldecode(file("${path.module}/templater/generated.yaml"))
+
+  iam_users              = config["users"]
+  iam_groups             = config["groups"]
+  iam_policies           = config["policies"]
+  iam_group_memberships  = config["group_memberships"]
+  iam_policy_attachments = config["policy_attachments"]
+}
+
+###################################################
+# IAM Groups
+###################################################
+resource "aws_iam_group" "groups" {
+  for_each = local.iam_groups
+
+  name = each.key
+  path = "/user_groups/"
 }
 
 ###################################################
 # IAM Users
-# Creates an IAM User for each unique entry in
-# local.iam_groups.members
 ###################################################
 resource "aws_iam_user" "users" {
-  for_each = toset(distinct(flatten([
-    for iam_group in local.iam_groups:
-    iam_group.members
-  ])))
+  for_each = local.iam_users
 
-  name          = each.value
+  name          = each.key
   path          = "/user_accounts/"
   force_destroy = true
 }
 
 ###################################################
-# IAM Groups
-# Creates an IAM Group for each key in
-# local.iam_groups
-###################################################
-resource "aws_iam_group" "groups" {
-  for_each = local.iam_groups
-
-  name = each.value.name
-  path = "/user_groups/"
-}
-
-###################################################
 # IAM Group Memberships
-# Assigns IAM users to IAM groups, based off of
-# local.iam_groups.members
 ###################################################
 resource "aws_iam_user_group_membership" "group_members" {
-  for_each = transpose({
-    for iam_group in local.iam_groups :
-    iam_group.name => iam_group.members
-  })
+  for_each = local.iam_group_memberships
 
   user   = each.key
   groups = each.value
@@ -53,21 +46,9 @@ resource "aws_iam_user_group_membership" "group_members" {
 
 ###################################################
 # IAM Policy Documents
-# Creates a policy document allowing sts:AssumeRole
-# The resource list is generated from the Cartesian
-# product of local.iam_groups.*.roles and
-# local.iam_groups.*.accounts
 ###################################################
 data "aws_iam_policy_document" "policies_json" {
-  for_each = {
-    for key, value in local.iam_policies :
-    key => flatten([
-      for account in flatten(value.accounts) : [
-        for role in value.roles :
-        format("arn:aws:iam::%v:role/%v", account, tostring(role))
-      ]
-    ])
-  }
+  for_each = local.iam_policies
 
   statement {
     sid       = "AssumeRolePermissions"
@@ -78,9 +59,7 @@ data "aws_iam_policy_document" "policies_json" {
 }
 
 ###################################################
-# IAM Policy Documents
-# Creates an IAM Policy for each key in
-# local.iam_policies
+# IAM Policies
 ###################################################
 resource "aws_iam_policy" "group_policies" {
   for_each = local.iam_policies
@@ -92,21 +71,13 @@ resource "aws_iam_policy" "group_policies" {
 }
 
 ###################################################
-# IAM Group Policy Attachment
-# Attaches IAM Policies to IAM Groups, based off of
-# the entries in local.iam_groups.*.iam_policies
+# IAM Group Policy Attachments
 ###################################################
 resource "aws_iam_group_policy_attachment" "group_policy_attachments" {
-  for_each = toset(flatten([
-    for group in local.iam_groups : [
-      for policy in local.iam_policies : [
-        format("%s,%s", group.name, policy.name)
-      ]
-    ]
-  ]))
+  for_each = local.iam_policy_attachments
 
-  group      = aws_iam_group.groups[(split(",", each.value))[0]].name
-  policy_arn = aws_iam_policy.group_policies[(split(",", each.value))[1]].arn
+  group      = aws_iam_group.groups[each.value.group].name
+  policy_arn = aws_iam_policy.group_policies[each.value.policy].arn
 
   depends_on = [aws_iam_group.groups, aws_iam_policy.group_policies]
 }

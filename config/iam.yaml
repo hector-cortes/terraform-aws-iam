@@ -1,0 +1,58 @@
+accounts:
+  group_1:
+    - "000000000000"
+    - "000000000001"
+    - "000000000002"
+    - "000000000003"
+    - "000000000004"
+  group_2:
+    - "000000000005"
+    - "000000000006"
+    - "000000000007"
+    - "000000000008"
+    - "000000000009"
+    
+iam_policies:
+  admin_policy: 
+    roles:
+      - admin
+      - power-user
+      - read-only-user
+    accounts:
+      - group_1
+      - group_2
+  dev_policy: 
+    roles:
+      - admin
+    accounts:
+      - group_2
+  read_only_policy: 
+    roles:
+      - read-only-user
+    accounts:
+      - group_2
+      
+iam_groups:
+  admins:
+    members:
+      - admin_1@xpiredmilk.com
+      - admin_2@xpiredmilk.com
+      - admin_3@xpiredmilk.com
+      - admin_4@xpiredmilk.com
+      - admin_5@xpiredmilk.com
+      - admin_6@xpiredmilk.com
+    policies:
+      - admin_policy
+  devs:
+    members:
+      - admin_4@xpiredmilk.com
+      - admin_5@xpiredmilk.com
+      - admin_6@xpiredmilk.com
+      - devs_1@xpiredmilk.com
+      - devs_2@xpiredmilk.com
+      - devs_3@xpiredmilk.com
+      - devs_4@xpiredmilk.com
+      - devs_5@xpiredmilk.com
+    policies:
+      - dev_policy
+      - read_only_policy
