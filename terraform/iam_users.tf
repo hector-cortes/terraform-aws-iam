@@ -2,13 +2,13 @@
 # Local Variables
 ###################################################
 locals {
-  config = yamldecode(file("${path.module}/templater/generated.yaml"))
+  config = yamldecode(file("${path.module}/terraform_autogen_config.yaml"))
 
-  iam_users              = config["users"]
-  iam_groups             = config["groups"]
-  iam_policies           = config["policies"]
-  iam_group_memberships  = config["group_memberships"]
-  iam_policy_attachments = config["policy_attachments"]
+  iam_users              = local.config["iam_users"]
+  iam_groups             = local.config["iam_groups"]
+  iam_policies           = local.config["assume_role_policies"]
+  iam_group_memberships  = local.config["iam_group_memberships"]
+  iam_policy_attachments = local.config["assume_role_policy_attachments"]
 }
 
 ###################################################
@@ -18,7 +18,7 @@ resource "aws_iam_group" "groups" {
   for_each = local.iam_groups
 
   name = each.key
-  path = "/user_groups/"
+  path = "/user-groups/"
 }
 
 ###################################################
@@ -28,7 +28,7 @@ resource "aws_iam_user" "users" {
   for_each = local.iam_users
 
   name          = each.key
-  path          = "/user_accounts/"
+  path          = "/user-accounts/"
   force_destroy = true
 }
 
