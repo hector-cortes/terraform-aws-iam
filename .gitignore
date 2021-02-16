@@ -1,3 +1,6 @@
+# Terraform autogen config
+terraform/terraform_autogen_config.yaml
+
 # Visual Studio Code Settings
 .vscode/
 
